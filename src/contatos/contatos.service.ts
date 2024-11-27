@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity'; 
+import { ContatosEntity } from './entities/contato.entity';
 import { Repository } from 'typeorm'
-import { UserInterface } from './interfaces/user.interface';
-import { UpdateInterface } from './interfaces/update.interface';
+//import { UserInterface } from './interfaces/user.interface';
+//import { UpdateInterface } from './interfaces/update.interface';
+import { CreateContatoDto } from './dto/create-contato.dto';
+import { ContatosInterface } from './interfaces/create.interface';
 
 @Injectable()
-export class UserService {
+export class ContatosService {
   constructor(
-    @InjectRepository(UserEntity) //DECORADOR DO ATRIBUTO
-    private readonly userRepository: Repository<UserEntity>, //CRIANDO UM ATRIBUTO PARA CLASSE E DECORANDO ELA COM O INJECTREPOSITORY (ISSO PARA PODER MANIPULAR UMA ENTIDADE NO NESTjs)
+    @InjectRepository(ContatosEntity) //DECORADOR DO ATRIBUTO
+    private readonly contatosRepository: Repository<ContatosEntity>, //CRIANDO UM ATRIBUTO PARA CLASSE E DECORANDO ELA COM O INJECTREPOSITORY (ISSO PARA PODER MANIPULAR UMA ENTIDADE NO NESTjs)
   ) {}
 
-  async createUser(body: UserInterface): Promise<UserEntity> {
-    const newuser = this.userRepository.create(body);
-    return await this.userRepository.save(newuser); 
+  async create(body: CreateContatoDto): Promise<ContatosEntity> {
+    const newcontato = this.contatosRepository.create(body);
+    return await this.contatosRepository.save(newcontato); 
   }
 
-  async findAll(param: boolean): Promise<UserEntity[]> { //TIPEI OBRIGANDO O RETORNO DO MÉTODO SER UM OBJETO DA ENTIDADE "UserEntity"
+  async findAll(param: boolean): Promise<ContatosEntity[]> { //TIPEI OBRIGANDO O RETORNO DO MÉTODO SER UM OBJETO DA ENTIDADE "ContatosEntity"
 
     if (param) {
-      const allusers = await this.userRepository.createQueryBuilder()
+      const allusers = await this.contatosRepository.createQueryBuilder()
         .withDeleted() // --> INCLUI OS REGISTROS COM SOFT DELETE
         .orderBy({id: 'ASC'})
         .getMany() 
@@ -28,12 +30,12 @@ export class UserService {
       return allusers
     } 
 
-    return await this.userRepository.find({ where: { deleted_at: null } });
+    return await this.contatosRepository.find({ where: { deleted_at: null } });
   }
 
   async findOne(id: number): Promise<UserInterface> {
 
-    const return_filter = await this.userRepository.createQueryBuilder('user')
+    const return_filter = await this.contatosRepository.createQueryBuilder('user')
       .withDeleted() 
       .where({ id: +id })
       .getOne();
@@ -55,13 +57,13 @@ export class UserService {
   
   async update(userId: number, userData: UserInterface): Promise<UpdateInterface | null> {
 
-    const user = await this.userRepository.preload({ id: Number(userId), ...userData });
+    const user = await this.contatosRepository.preload({ id: Number(userId), ...userData });
     
     if (!user) {
       return null
     }
 
-    const updatedUser = await this.userRepository.save(user); 
+    const updatedUser = await this.contatosRepository.save(user); 
     
     const return_up = {
       id: userId,

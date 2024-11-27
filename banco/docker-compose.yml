@@ -7,16 +7,34 @@ services:
     restart: always
 
     ports:
-      - 3315:3306              
+      - 3316:3306              
 
     env_file:
       - ./.env.credenciais     
     
     volumes:
       - mysql_data:/var/lib/mysql 
+    networks:
+      - app-network
+
+  api:
+    container_name: nestjs_api
+    build:
+      context: ../ 
+      dockerfile: ./Dockerfile
+    ports:
+      - "4000:3000"
+    depends_on:
+      - mysql_base
+    networks:
+      - app-network
+    env_file:
+      - ./.env.credenciais
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   mysql_data:                   
     driver: local
-
-

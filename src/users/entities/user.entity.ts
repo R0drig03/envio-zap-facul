@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ContatosEntity } from "src/contatos/entities/contato.entity";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+
 
 @Entity({name:'users'})
 export class UserEntity {
@@ -21,9 +23,15 @@ export class UserEntity {
     @Column({type: "tinyint", name: 'type_user', comment: '0: PADRÃO 1: ADMIN'})
     type_user: number
 
+    @UpdateDateColumn({ name: 'update_at' })
+    updated_at: Date;
+
     @CreateDateColumn({ name: 'created_at' })
     created_at: Date
 
-    @Column({type: "tinyint", name: 'status_user', default: 1, comment: '0: INATIVO 1: ATIVO'})
-    status_user: number
+    @DeleteDateColumn()
+    deleted_at: Date
+
+    @OneToMany(() => ContatosEntity, (contatos) => contatos.fk_user)
+    fk_contatos: ContatosEntity[];
 }

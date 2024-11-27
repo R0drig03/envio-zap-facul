@@ -1,34 +1,46 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiBody, ApiQuery } from '@nestjs/swagger';
+import { UserService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
 
-@Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+@Controller('Users')
+export class UserController{
+    constructor(private readonly userService: UserService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
+    @ApiBody({ type: CreateUserDto })
+    @Post('')
+    async createConvenio(@Body() body_create: CreateUserDto ): Promise<CreateUserDto>{
+      return await this.userService.createUser(body_create)
+    }
+    
+    @Get('all')
+    @ApiQuery({
+      name: 'inativos',
+      required: false, // --> FICA DEFINIDO COMO NÃO OBRIGATÓRIO O PREENCHIMENTO DOS PARÃMETROS
+      type: Boolean,
+      description: 'Convenios Inativos',
+    })
+    async findAll(@Query('inativos') param_input: string): Promise<UserEntity[]> {
+      const param = param_input === 'true'
+      return await this.userService.findAll(param);
+    }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+    @Get(':id')
+    async findOne(@Param('id') id_input: number) {
+      return await this.userService.findOne(+id_input);
+    }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
+    @Patch(':id')
+    @ApiBody({ type: UpdateUserDto })
+    async upConvenio(@Param('id') id: number, @Body() Body: UpdateUserDto) {
+      return await this.userService.update(+id, Body);
+    }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
+    @Delete(':id')
+    async deleteCity(@Param('id') id: number) {
+      return await this.userService.delete(id);
+    }
+    
 }
