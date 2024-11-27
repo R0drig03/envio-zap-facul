@@ -11,7 +11,7 @@ export class UserEntity {
     @Column({type: 'varchar', length: 255, name: 'nome', nullable: false})
     nome: string
 
-    @Column({type:'varchar', length:255, name: 'email'})
+    @Column({type:'varchar', length: 255, name: 'email'})
     email: string
 
     @Column({type: 'varchar', length: 64, name: 'username', nullable: false})

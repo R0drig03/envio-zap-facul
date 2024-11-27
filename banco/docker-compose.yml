@@ -23,7 +23,7 @@ services:
       context: ../ 
       dockerfile: ./Dockerfile
     ports:
-      - "4000:3000"
+      - "3000:3000"
     depends_on:
       - mysql_base
     networks:

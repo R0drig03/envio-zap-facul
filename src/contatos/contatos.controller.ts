@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ContatosService } from './contatos.service';
 import { CreateContatoDto } from './dto/create-contato.dto';
 import { UpdateContatoDto } from './dto/update-contato.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('contatos')
 export class ContatosController {
@@ -13,8 +14,25 @@ export class ContatosController {
   }
 
   @Get('all')
-  findAll() {
-    return this.contatosService.findAll();
+  @ApiQuery(
+    {
+        name: 'inativos',
+        required: false, // --> FICA DEFINIDO COMO NÃO OBRIGATÓRIO O PREENCHIMENTO DOS PARÃMETROS
+        type: Boolean,
+        description: 'Contatos Inativos',
+    }
+  )
+  @ApiQuery(
+    {
+        name: 'telefone',
+        required: false, // --> FICA DEFINIDO COMO NÃO OBRIGATÓRIO O PREENCHIMENTO DOS PARÃMETROS
+        type: Number,
+        description: 'Numero Telefone',
+    }
+)
+  findAll(@Query('inativos') param_inativ?: boolean, @Query('telefone') param_telefone?: number) {
+
+    return this.contatosService.findAll(param_inativ, param_telefone);
   }
 
   @Get(':id')
@@ -29,6 +47,6 @@ export class ContatosController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.contatosService.remove(+id);
+    return this.contatosService.delete(+id);
   }
 }

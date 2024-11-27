@@ -1,7 +1,10 @@
-export interface ContatosInterface {
-    nome: string;
-    email: string;
-    ddd: Number;
-    telefone: string;
-    fk_user: number;
+import { UserEntity } from "src/users/entities/user.entity";
+
+export interface CreateContatosInterface {
+    nome?: string;
+    email?: string;
+    ddd?: number;
+    telefone?: number;
+    fk_user?: UserEntity;
+    deleted_at?: Date;
 }

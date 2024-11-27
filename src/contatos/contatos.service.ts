@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ContatosEntity } from './entities/contato.entity';
 import { Repository } from 'typeorm'
-//import { UserInterface } from './interfaces/user.interface';
-//import { UpdateInterface } from './interfaces/update.interface';
+//import { ContatosInterface } from './interfaces/user.interface';
+import { UpdateInterface } from './interfaces/update.interface';
 import { CreateContatoDto } from './dto/create-contato.dto';
-import { ContatosInterface } from './interfaces/create.interface';
+import { CreateContatosInterface } from './interfaces/create.interface';
+import { ContatosInterface } from './interfaces/contato.interface';
 
 @Injectable()
 export class ContatosService {
@@ -19,21 +20,42 @@ export class ContatosService {
     return await this.contatosRepository.save(newcontato); 
   }
 
-  async findAll(param: boolean): Promise<ContatosEntity[]> { //TIPEI OBRIGANDO O RETORNO DO MÉTODO SER UM OBJETO DA ENTIDADE "ContatosEntity"
+  async findAll(param_inativ?: boolean, param_telefon?: number): Promise<ContatosInterface[]> { //TIPEI OBRIGANDO O RETORNO DO MÉTODO SER UM OBJETO DA ENTIDADE "ContatosEntity"
 
-    if (param) {
-      const allusers = await this.contatosRepository.createQueryBuilder()
-        .withDeleted() // --> INCLUI OS REGISTROS COM SOFT DELETE
-        .orderBy({id: 'ASC'})
-        .getMany() 
-         
-      return allusers
-    } 
+    const queryBuilder = this.contatosRepository.createQueryBuilder('contatos').leftJoinAndSelect('contatos.fk_user', 'fk_user');
 
-    return await this.contatosRepository.find({ where: { deleted_at: null } });
+    if (param_inativ) {
+      queryBuilder.withDeleted(); // --> INCLUI OS REGISTROS COM SOFT DELETE
+    }
+
+    if (param_telefon) {
+      queryBuilder.andWhere("telefone LIKE :telefone", { telefone: `%${param_telefon}%` }); 
+    }
+
+    const return_consulta = await queryBuilder.orderBy({ id: 'ASC' }).getMany(); // EXECUTANDO A CONSULTA
+
+    const consult_interface = return_consulta.map(element_obj => {
+      return {
+        id: element_obj.id,
+        nome: element_obj.nome,
+        telefone: element_obj.telefone,
+        fk_user: {
+            id: element_obj.fk_user.id, 
+            username: element_obj.fk_user.username, 
+            nome: element_obj.nome, 
+            email: element_obj.fk_user.email, 
+            type_user: element_obj.fk_user.type_user
+          },
+        updated_at: element_obj.updated_at,
+        created_at: element_obj.created_at,
+        deleted_at: element_obj.deleted_at
+      }
+    });
+
+    return consult_interface
   }
 
-  async findOne(id: number): Promise<UserInterface> {
+  async findOne(id: number): Promise<ContatosInterface> {
 
     const return_filter = await this.contatosRepository.createQueryBuilder('user')
       .withDeleted() 
@@ -43,21 +65,26 @@ export class ContatosService {
     const return_interface = {
       id: return_filter.id,
       nome: return_filter.nome,
-      email:  return_filter.email,
-      username: return_filter.username,
-      password: return_filter.password,
-      type_user: return_filter.type_user,
+      telefone: return_filter.telefone,
+      fk_user: {
+          id: return_filter.fk_user.id, 
+          username: return_filter.fk_user.username, 
+          nome: return_filter.nome, 
+          email: return_filter.fk_user.email, 
+          type_user: return_filter.fk_user.type_user
+        },
+      updated_at: return_filter.updated_at,
       created_at: return_filter.created_at,
       deleted_at: return_filter.deleted_at
-    };
+    }
 
     return return_interface
   }
 
   
-  async update(userId: number, userData: UserInterface): Promise<UpdateInterface | null> {
+  async update(userId: number, userData: CreateContatosInterface): Promise<UpdateInterface | null> {
 
-    const user = await this.contatosRepository.preload({ id: Number(userId), ...userData });
+    const user = await this.contatosRepository.preload({ id: +userId, ...userData });
     
     if (!user) {
       return null
@@ -76,7 +103,7 @@ export class ContatosService {
   }
 
   
-  async delete( userId: Number): Promise<UserInterface | null> {
+  async delete( userId: Number): Promise<ContatosInterface | null> {
 
     //PRIMEIRO PRECISO BUSCAR OS DADOS DAQUELE ID PARA REALIZAR O RETURN DA FUNÇÃO
     const dados_id = await this.findOne(Number(userId))
@@ -90,7 +117,7 @@ export class ContatosService {
     try {
       await this.update(Number(userId), payload); //--> ATUALIZANDO
     
-      const data_return: UserInterface = {
+      const data_return: ContatosInterface = {
         id: dados_id.id,
         nome: dados_id.nome,
         created_at: dados_id.created_at,

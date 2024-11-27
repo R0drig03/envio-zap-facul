@@ -13,7 +13,7 @@ export class ContatosEntity {
     @Column({type:'varchar', length:255, name: 'email'})
     email: string
 
-    @Column({type: 'int', length: 64, name: 'telefone', nullable: false})
+    @Column({type: 'int', name: 'telefone', nullable: false})
     telefone: number
 
     @ManyToOne(() => UserEntity, (users) => users.fk_contatos)

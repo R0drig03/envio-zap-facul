@@ -4,8 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 
 
 console.log('DB Config:', {
-  host: process.env.MYSQL_HOST,
-  port: process.env.MYSQL_PORT,
+  host: 'TESTE',
+  port: 'TESTE',
   username: process.env.MYSQL_USERNAME,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
@@ -17,8 +17,8 @@ console.log('DB Config:', {
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'mysql_base',
-      port: parseInt(process.env.MYSQL_PORT),
-      username: process.env.MYSQL_USERNAME,
+      port: 3306,
+      username: 'admin',
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
       autoLoadEntities: true,
