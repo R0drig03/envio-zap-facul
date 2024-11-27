@@ -32,7 +32,7 @@ export class ContatosService {
       queryBuilder.andWhere("telefone LIKE :telefone", { telefone: `%${param_telefon}%` }); 
     }
 
-    const return_consulta = await queryBuilder.orderBy({ id: 'ASC' }).getMany(); // EXECUTANDO A CONSULTA
+    const return_consulta = await queryBuilder.orderBy({ 'contatos.id': 'ASC' }).getMany(); // EXECUTANDO A CONSULTA
 
     const consult_interface = return_consulta.map(element_obj => {
       return {
@@ -57,8 +57,9 @@ export class ContatosService {
 
   async findOne(id: number): Promise<ContatosInterface> {
 
-    const return_filter = await this.contatosRepository.createQueryBuilder('user')
-      .withDeleted() 
+    const return_filter = await this.contatosRepository.createQueryBuilder('contatos')
+      .leftJoinAndSelect('contatos.fk_user', 'fk_user')
+      .withDeleted() // --> INCLUI OS REGISTROS COM SOFT DELETE
       .where({ id: +id })
       .getOne();
     

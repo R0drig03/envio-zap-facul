@@ -10,11 +10,11 @@ export class ContatosEntity {
     @Column({type: 'varchar', length: 255, name: 'nome', nullable: false})
     nome: string
 
-    @Column({type:'varchar', length:255, name: 'email'})
+    @Column({type:'varchar', length: 255, name: 'email'})
     email: string
 
-    @Column({type: 'int', name: 'telefone', nullable: false})
-    telefone: number
+    @Column({type: 'varchar', length: 255, name: 'telefone', nullable: false})
+    telefone: string
 
     @ManyToOne(() => UserEntity, (users) => users.fk_contatos)
     @JoinColumn({ name: 'fk_user' })

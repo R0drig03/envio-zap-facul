@@ -4,7 +4,7 @@ export interface ContatosInterface {
     id?: number
     nome?: string
     email?: string
-    telefone?: number
+    telefone?: string
     fk_user?: {id: number, username: string, nome: string, email: string, type_user: number} | number
     updated_at?: Date;
     created_at?: Date

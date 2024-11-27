@@ -9,7 +9,7 @@ export class CreateContatoDto {
     email: string;
 
     @ApiProperty()
-    telefone: number;
+    telefone: string;
 
     @ApiProperty()
     fk_user: UserEntity;
