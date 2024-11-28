@@ -16,12 +16,14 @@ export class ContatosService {
   ) {}
 
   async create(body: CreateContatoDto): Promise<ContatosEntity> {
+    console.log('BATI NO ENDPOINT DE CRIAR CONTATO')
     const newcontato = this.contatosRepository.create(body);
     return await this.contatosRepository.save(newcontato); 
   }
 
   async findAll(param_inativ?: boolean, param_telefon?: number): Promise<ContatosInterface[]> { //TIPEI OBRIGANDO O RETORNO DO MÉTODO SER UM OBJETO DA ENTIDADE "ContatosEntity"
 
+    console.log('BATI NO ENDPOINT PARA PUXAR TUDO')
     const queryBuilder = this.contatosRepository.createQueryBuilder('contatos').leftJoinAndSelect('contatos.fk_user', 'fk_user');
 
     if (param_inativ) {
@@ -57,6 +59,7 @@ export class ContatosService {
 
   async findOne(id: number): Promise<ContatosInterface> {
 
+    console.log('BATI NO ENDPOINT DE PEGAR UM')
     const return_filter = await this.contatosRepository.createQueryBuilder('contatos')
       .leftJoinAndSelect('contatos.fk_user', 'fk_user')
       .withDeleted() // --> INCLUI OS REGISTROS COM SOFT DELETE
@@ -85,6 +88,7 @@ export class ContatosService {
   
   async update(userId: number, userData: CreateContatosInterface): Promise<UpdateInterface | null> {
 
+    console.log('BATI NO ENDPOINT DE ATUALIZAR')
     const user = await this.contatosRepository.preload({ id: +userId, ...userData });
     
     if (!user) {
@@ -106,6 +110,7 @@ export class ContatosService {
   
   async delete( userId: Number): Promise<ContatosInterface | null> {
 
+    console.log('BATI NO ENDPOINT DE DELETAR')
     //PRIMEIRO PRECISO BUSCAR OS DADOS DAQUELE ID PARA REALIZAR O RETURN DA FUNÇÃO
     const dados_id = await this.findOne(Number(userId))
 
